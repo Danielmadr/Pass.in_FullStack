@@ -57,7 +57,7 @@ Contribuições são bem-vindas! Sinta-se à vontade para abrir uma issue ou env
 
 ## Autor
 
-Desenvolvido por [Daniel Martins de Andrade] - [LinkedIn]([link_do_seu_perfil](https://www.linkedin.com/in/daniel-martins-de-andrade/))
+Desenvolvido por [ Daniel Martins de Andrade ] - [LinkedIn](https://www.linkedin.com/in/daniel-martins-de-andrade/)
 
 ## Créditos
 
