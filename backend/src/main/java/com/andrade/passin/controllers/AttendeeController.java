@@ -13,9 +13,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 @AllArgsConstructor
 public class AttendeeController {
   private final AttendeeService attendeeService;
-  @GetMapping("/{attendeeId}/badge")
-  public ResponseEntity<AttendeeBadgeResponseDTO> getAttendeeBadge(@PathVariable String attendeeId, UriComponentsBuilder uriBuilder) {
-    AttendeeBadgeResponseDTO attendeeBadge = attendeeService.getAttendeeBadge(attendeeId, uriBuilder);
+  @GetMapping("/{email}/badge")
+  public ResponseEntity<AttendeeBadgeResponseDTO> getAttendeeBadge(@PathVariable String email, UriComponentsBuilder uriBuilder) {
+    AttendeeBadgeResponseDTO attendeeBadge = attendeeService.getAttendeeBadge(email, uriBuilder);
     return ResponseEntity.ok(attendeeBadge);
   }
 

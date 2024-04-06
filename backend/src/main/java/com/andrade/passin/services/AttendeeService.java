@@ -4,12 +4,11 @@ import com.andrade.passin.domain.attendee.Attendee;
 import com.andrade.passin.domain.attendee.exceptions.AttendeeAlreadyRegisteredException;
 import com.andrade.passin.domain.attendee.exceptions.AttendeeNotFoundException;
 import com.andrade.passin.domain.checkIn.CheckIn;
+import com.andrade.passin.dto.attendee.AttendeeBadgeDTO;
 import com.andrade.passin.dto.attendee.AttendeeBadgeResponseDTO;
 import com.andrade.passin.dto.attendee.AttendeeDetails;
 import com.andrade.passin.dto.attendee.AttendeesListResponseDTO;
-import com.andrade.passin.dto.attendee.AttendeeBadgeDTO;
 import com.andrade.passin.repositories.AttendeeRepository;
-import com.andrade.passin.repositories.CheckInRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -34,7 +33,7 @@ public class AttendeeService {
             .stream()
             .map(attendee -> {
               Optional<CheckIn> checkIn = this.checkInService.getCheckIn(attendee.getId());
-              LocalDateTime checkInAt = checkIn.<LocalDateTime>map(CheckIn::getCreatedAt).orElse(null);
+              LocalDateTime checkInAt = checkIn.map(CheckIn::getCreatedAt).orElse(null);
               return new AttendeeDetails(
                       attendee.getId(),
                       attendee.getName(),
@@ -56,17 +55,19 @@ public class AttendeeService {
     this.attendeeRepository.save(attendee);
   }
 
-  public AttendeeBadgeResponseDTO getAttendeeBadge(String attendeeId, UriComponentsBuilder uriBuilder) {
-    Attendee attendee = getAttendee(attendeeId);
+  public AttendeeBadgeResponseDTO getAttendeeBadge(String email, UriComponentsBuilder uriBuilder) {
+    Attendee attendee = getAttendee(email);
     var uri = uriBuilder
             .path("/attendees/{attendeeId}/check-in")
-            .buildAndExpand(attendeeId).toUri().toString();
+            .buildAndExpand(attendee.getId()).toUri().toString();
 
     AttendeeBadgeDTO badge = new AttendeeBadgeDTO(
+            attendee.getId(),
             attendee.getName(),
             attendee.getEmail(),
             uri,
-            attendee.getEvent().getId());
+            attendee.getEvent().getTitle()
+    );
 
     return new AttendeeBadgeResponseDTO(badge);
   }
@@ -75,9 +76,10 @@ public class AttendeeService {
     Attendee attendee = getAttendee(attendeeId);
     this.checkInService.registerCheckIn(attendee);
   }
-  private Attendee getAttendee(String attendeeId) {
-    return this.attendeeRepository.findById(attendeeId).orElseThrow(
-            () -> new AttendeeNotFoundException("Attendee not found with id " + attendeeId)
+
+  private Attendee getAttendee(String email) {
+    return this.attendeeRepository.findByEmail(email).orElseThrow(
+            () -> new AttendeeNotFoundException("Attendee not found with E-mail " + email)
     );
   }
 }

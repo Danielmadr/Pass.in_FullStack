@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { View, Image, StatusBar, Alert } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { Link } from "expo-router";
+import { Link, Redirect } from "expo-router";
 
 import { Input } from "@/components/input";
 import { Button } from "@/components/button";
 
 import { api } from "@/server/api";
+import { useBadgeStore } from "@/store/badge-store";
 
 import { colors } from "@/styles/colors";
 
@@ -14,25 +15,30 @@ export default function Home() {
   const [value, setValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  const badgeStore = useBadgeStore();
+
   async function handleAccessCredential() {
     try {
       if (!value.trim()) {
         return Alert.alert(
           "Atenção",
-          "Por favor, informe o código do ingresso."
+          "Por favor, informe o E-mail do participante"
         );
       }
 
       setIsLoading(true);
 
       const { data } = await api.get(`/attendees/${value}/badge`);
-      console.log(data.badge);
+      badgeStore.save(data.badge);
     } catch (error) {
       console.log(error);
-      Alert.alert("Atenção", "Credencial não encontrada");
-    } finally {
       setIsLoading(false);
+      Alert.alert("Atenção", "Credencial não encontrada");
     }
+  }
+
+  if (badgeStore.data?.checkInUrl) {
+    return <Redirect href={"/ticket"} />;
   }
 
   return (
@@ -53,12 +59,16 @@ export default function Home() {
             color={colors.green[200]}
           />
           <Input.Field
-            placeholder="Código do ingresso"
+            placeholder="E-mail do participante"
             onChangeText={setValue}
           />
         </Input>
 
-        <Button title="Acessar credencial" onPress={handleAccessCredential} />
+        <Button
+          title="Acessar credencial"
+          onPress={handleAccessCredential}
+          isLoading={isLoading}
+        />
 
         <Link
           href="/register"

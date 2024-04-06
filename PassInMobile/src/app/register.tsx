@@ -9,14 +9,18 @@ import { Button } from "@/components/button";
 import { colors } from "@/styles/colors";
 
 import { api } from "@/server/api";
+import { useBadgeStore } from "@/store/badge-store";
+
 import axios from "axios";
 
-const EVENT_ID = "d094f1a1-e518-4f2f-9411-bbd845c1ee37";
+const EVENT_ID = "02c8aed5-ac96-48bc-aa7d-65a5a9c5d120";
 
 export default function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const badgeStore = useBadgeStore();
 
   async function handleRegister() {
     try {
@@ -31,21 +35,22 @@ export default function Register() {
         email,
       });
 
+      console.log(registerResponse.data);
+
       if (registerResponse.data.attendeeId) {
+        const badgeResponse = await api.get(`/attendees/${email}/badge`);
+        badgeStore.save(badgeResponse.data.badge);
+
         Alert.alert("Sucesso", "Inscricão realizada com sucesso", [
           {
-            text: "Ir para minha Credencial",
-            onPress: () => {
-              router.push("/ticket");
-            },
+            text: "OK",
+            onPress: () => router.push("/ticket"),
           },
         ]);
       }
-
-      router.push("/ticket");
     } catch (error) {
       console.log(error);
-
+      setIsLoading(false);
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 409) {
           return Alert.alert("Atenção", "Inscricão ja existente");
@@ -53,8 +58,6 @@ export default function Register() {
       }
 
       Alert.alert("Atenção", "Falha ao realizar inscricão");
-    } finally {
-      setIsLoading(false);
     }
   }
 
