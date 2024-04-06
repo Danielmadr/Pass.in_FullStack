@@ -63,7 +63,7 @@ Desenvolvido por [ Daniel Martins de Andrade ] - [LinkedIn](https://www.linkedin
 
 Este projeto foi desenvolvido com base no tutorial oferecido pela Rocketseat durante o evento NJW Unite. Agradecemos à equipe da Rocketseat por fornecer recursos valiosos e conhecimento técnico.
 
-Instrutora responsável pelo tutorial: Fernanda Kipper
+Instrutores responsáveis pelo tutorial: Fernanda Kipper e Rodrigo Gonçalves
 
 ## Licença
 
